@@ -8,6 +8,7 @@ Created on Thu Jun 27 21:04:35 2024
 import os
 import pickle
 import streamlit as st
+import pandas as pd
 from streamlit_option_menu import option_menu
 
 # Set page configuration
@@ -18,6 +19,12 @@ st.set_page_config(page_title="Health Assistant",
     
 # getting the working directory of the main.py
 working_dir = os.path.dirname(os.path.abspath(__file__))
+
+#load csv
+diabetes_dataset = pd.read_csv(open(f'{working_dir}/csv/diabetes.csv'))
+heart_dataset = pd.read_csv(open(f'{working_dir}/csv/heart.csv'))
+heart_dataset.columns = ['Age','Sex','Cp','Trestbps','Chol','Fbs','Restecg','Thalach','Exang','Oldpeak','Slope','Ca','Thal','arget']   
+parkinsons_dataset = pd.read_csv(open(f'{working_dir}/csv/parkinsons.csv'))
 
 # loading the saved models
 
@@ -33,10 +40,12 @@ with st.sidebar:
 
                            ['Diabetes Prediction',
                             'Heart Disease Prediction',
-                            'Parkinsons Prediction'],
+                            'Parkinsons Prediction', 'Sample Dataset'],
                            menu_icon='hospital-fill',
                            icons=['activity', 'heart', 'person'],
                            default_index=0)
+
+
 
 
 # Diabetes Prediction Page
@@ -44,8 +53,6 @@ if selected == 'Diabetes Prediction':
  
     # page title
     st.title('Diabetes Prediction using ML')
-    
-    st.markdown(":red-background[  Sampled-Set: 6 , 148 , 72 , 35 , 0 , 33.6 , 0.627 , 50 ---Diabitic  ]")
    
     # getting the input data from the user
     col1, col2, col3 = st.columns(3)
@@ -102,10 +109,8 @@ if selected == 'Heart Disease Prediction':
 
     # page title
     st.title('Heart Disease Prediction using ML')
-    st.markdown(":red-background[  Sampled-Set: 55,1,0,132,353,0,1,132,1,1.2,1,1,3 ---No Heart Disease  ]")
-
+   
     col1, col2, col3 = st.columns(3)
-
     with col1:
         age = st.text_input('Age')
 
@@ -168,31 +173,12 @@ if selected == 'Heart Disease Prediction':
 
 
 
-red_background_style = """
-    <style>
-        .st-cq {
-            background-color: rgba(146, 15, 22, 0.76); /* Light red background */
-            opacity: 0.6;
-            padding: 10px;
-            border-radius: 5px;
-        }
-    </style>
-"""
-st.markdown(red_background_style, unsafe_allow_html=True)
+
 # Parkinson's Prediction Page
 if selected == "Parkinsons Prediction":
 
     # page title
     st.title("Parkinson's Disease Prediction using ML")
-    #st.markdown(":red-background[  Sampled-Set: 95.73,132.068,91.754,0.00551,0.00006,0.00293,0.00332,0.0088,0.02093,0.191,0.01073,0.01277,0.01717,0.03218,0.0107,21.812,0.615551,0.773587,-5.498678,0.327769,2.322511,0.231571 --- have Parkinson's disease  ]")
-    txt = st.text_area(
-    "",
-    'Sampled-Set=='
-    '95.73 , 132.068 , 91.754 , 0.00551 , 0.00006 , 0.00293 , 0.00332 , 0.0088 , 0.02093 , 0.191 , 0.01073 , 0.01277'
-    ',0.01717 , 0.03218 , 0.0107 , 21.812 , 0.615551 , 0.773587 , -5.498678 , 0.327769 , 2.322511 , 0.231571'
-    "--- have Parkinson's disease ",
-)
-   
     
 
     col1, col2, col3, col4, col5 = st.columns(5)
@@ -283,3 +269,18 @@ if selected == "Parkinsons Prediction":
             parkinsons_diagnosis = "The person does not have Parkinson's disease"
 
     st.success(parkinsons_diagnosis)
+    
+a=['age','sex','cp','trestbps','chol','fbs','restecg','thalach','exang','oldpeak','slope','ca','thal','target']   
+if selected == 'Sample Dataset':
+    st.title('Sample DataSet')
+    st.subheader('Diabetes DataSet', divider='rainbow')
+    df_diabetes = diabetes_dataset.loc[1:150,]
+    st.dataframe(df_diabetes)
+    st.subheader('Heart DataSet', divider='rainbow')
+    df_heart = heart_dataset.loc[1:150,]
+    st.dataframe(df_heart)
+    st.subheader('Parkinsons DataSet', divider='rainbow')
+    st.markdown(":red-background[Caution: staus column is the outcome of prediction]")
+    df_parkinsons = parkinsons_dataset.loc[1:150,]
+    st.dataframe(df_parkinsons)
+    
